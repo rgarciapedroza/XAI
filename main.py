@@ -2,9 +2,11 @@ import pandas as pd
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
+
+import shap
 
 data = pd.read_csv("adult.csv")
 data = data.dropna()
@@ -24,7 +26,7 @@ y = data["income"]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=21)
 
-model = DecisionTreeClassifier(max_depth=5, random_state=21)
+model = LogisticRegression(max_iter=1000, random_state=21)
 model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
@@ -37,7 +39,6 @@ disp.plot(cmap='Blues', values_format='d')
 plt.title("Confusion Matrix")
 plt.show()
 
-
-
-
-
+explainer = shap.Explainer(model, X_train)
+shap_values = explainer(X_test)
+shap.summary_plot(shap_values, X_test)
