@@ -54,3 +54,11 @@ plt.show()
 explainer = shap.Explainer(model, X_train)
 shap_values = explainer(X_test)
 shap.summary_plot(shap_values, X_test)
+
+
+def demographic_parity(y_pred, sensitive_feature):
+    df = pd.DataFrame({'y_pred': y_pred, 'group': sensitive_feature})
+    return df.groupby('group')['y_pred'].mean()
+
+dp = demographic_parity(y_pred, X_test['sex'])
+print("Demographic Parity by sex:\n", dp)
